@@ -17,8 +17,7 @@ export default function NavBar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 20);
+      setIsScrolled(window.scrollY > 20);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -27,11 +26,7 @@ export default function NavBar() {
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-    if (!isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+    document.body.style.overflow = !isMobileMenuOpen ? "hidden" : "auto";
   };
 
   return (
@@ -59,18 +54,28 @@ export default function NavBar() {
               onMouseEnter={() => setShowProductsDropdown(true)}
               onMouseLeave={() => setShowProductsDropdown(false)}
             >
-              <button className="flex items-center gap-1 text-foreground/70 hover:text-foreground transition-colors">
+              <motion.button
+                className="flex items-center gap-1 transition-colors"
+                initial={{ color: "rgb(255,255,255,0.7)" }}
+                animate={{
+                  color: isScrolled ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)",
+                }}
+                whileHover={{
+                  color: isScrolled ? "#000000" : "#ffffff",
+                }}
+                transition={{ duration: 0.3 }}
+              >
                 Products
                 <ChevronDown className="h-4 w-4" />
-              </button>
+              </motion.button>
               {showProductsDropdown && <ProductsDropdown />}
             </div>
 
-            <NavLink href="/solutions">Solutions</NavLink>
-            <NavLink href="/about">About Us</NavLink>
-            <NavLink href="/research">Research</NavLink>
-            <NavLink href="/blog">Blog</NavLink>
-            <NavLink href="/contact">Contact</NavLink>
+            <NavLink href="/solutions" isScrolled={isScrolled}>Solutions</NavLink>
+            <NavLink href="/about" isScrolled={isScrolled}>About Us</NavLink>
+            <NavLink href="/research" isScrolled={isScrolled}>Research</NavLink>
+            <NavLink href="/blog" isScrolled={isScrolled}>Blog</NavLink>
+            <NavLink href="/contact" isScrolled={isScrolled}>Contact</NavLink>
 
             <Button size="sm" className="ml-4">
               Get Started
@@ -79,7 +84,10 @@ export default function NavBar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 text-foreground"
+            className={cn(
+              "md:hidden p-2 transition-colors",
+              isScrolled ? "text-foreground" : "text-white"
+            )}
             onClick={toggleMobileMenu}
             aria-label="Toggle menu"
           >
@@ -101,20 +109,26 @@ export default function NavBar() {
 interface NavLinkProps {
   href: string;
   children: React.ReactNode;
+  isScrolled: boolean;
 }
 
-function NavLink({ href, children }: NavLinkProps) {
+function NavLink({ href, children, isScrolled }: NavLinkProps) {
   return (
-    <motion.div
-      variants={navItemHover}
-      initial="initial"
-      whileHover="hover"
-    >
-      <Link 
-        href={href} 
-        className="text-foreground/70 hover:text-foreground transition-colors"
-      >
-        {children}
+    <motion.div variants={navItemHover} initial="initial" whileHover="hover">
+      <Link href={href} passHref>
+        <motion.a
+          className="transition-colors cursor-pointer"
+          initial={{ color: "rgba(255,255,255,0.7)" }}
+          animate={{
+            color: isScrolled ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)",
+          }}
+          whileHover={{
+            color: isScrolled ? "#000000" : "#ffffff",
+          }}
+          transition={{ duration: 0.3 }}
+        >
+          {children}
+        </motion.a>
       </Link>
     </motion.div>
   );
