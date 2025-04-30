@@ -3,12 +3,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: {
-    unoptimized: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true, // 👈 disables type checking during build
-  },
+  images: { unoptimized: true },
 };
 
 module.exports = nextConfig;
